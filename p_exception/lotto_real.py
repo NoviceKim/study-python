@@ -85,8 +85,35 @@ def lotto_draw(num: int):
     # 남은 것들
     # 당첨 번호와 내 추첨 비교해서, 당첨 개수 + 보너스 일치 여부를 dict 형태로 출력
     # {'맞힌 개수': n, '보너스': '일치/불일치'}
+    # 전체 추첨 리스트 - 각 추첨 순회
+    for i in range(len(my_draw)):
+        # 맞힌 개수와 보너스 일치 여부의 초기값을 0으로 지정 - 추첨 한 번 검사할 때마다 초기화
+        correct = 0
+        bonus = 0
+
+        # 추첨 리스트 하나에 대하여 처음 ~ 끝까지 순회
+        for j in range(len(my_draw[i])):
+            # 만약 당첨 번호(win_num[0:6]) 안에 있는 숫자가 내 추첨에도 있다면
+            if my_draw[i][j] in win_num[0:6]:
+                # 맞힌 개수 +1
+                correct += 1
+
+            # 만약 보너스 번호가 있다면, 보너스 여부 +1(True)
+            if my_draw[i][j] == win_num[6]:
+                bonus += 1
+
+        # 여기까지 진행했으면, 추첨 하나에 대한 결과가 나왔을 것
+        # 각 추첨 분석 끝날 때마다 리스트(result)에 dict 형태로 추첨 결과 추가
+        result.append({'맞힌 개수': correct, '보너스': '일치' if bonus == 1 else '불일치'})
+
+    # 각 추첨에 대한 결과 출력
+    print('\n추첨 결과')
+
+    for i in range(len(result)):
+        print(result[i])
 
     # 위 결과에 따라 가장 높은 등수 출력
+    # 이건 6(개수) in '딕셔너리 키값' 식으로 가장 높은 거 찾아서 출력하면 될 듯
 
 
 # 함수 사용 - print는 함수 안에서 해주니, 여기서는 따로 쓸 필요 없음

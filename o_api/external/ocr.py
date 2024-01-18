@@ -11,4 +11,4 @@ response.raise_for_status()
 # 위 API가 분석한 글자 데이터를 json으로 받아옴
 result = response.json()
 
-print(type(result))
+print(result['ParsedResults'][0]['ParsedText'])

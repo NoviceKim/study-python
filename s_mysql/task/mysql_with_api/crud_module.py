@@ -1,4 +1,4 @@
-from s_mysql.connection_module import *
+from connection_module import *
 
 
 # save 기능 함수 제작 - connection_module 에 있는 execute()를 데코레이터로 사용

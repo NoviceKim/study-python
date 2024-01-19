@@ -138,70 +138,70 @@ if __name__ == '__main__':
 
 
     # # 3. Papago - DB 연동
-
-    # 파파고 API 요청 코드
-    client_id = 'uxrSmI_uYTAYICL5YP8J'
-    client_secret = 'r0Olb4srIA'
-
-    # 파파고 API에 보낼 번역할 문장(한국어 -> 영어)
-    kor_text = "뿌린대로 거둔다"
-
-    encoding_text = urllib.parse.quote(kor_text)
-    data = f'source=ko&target=en&text={encoding_text}'
-    url = 'https://openapi.naver.com/v1/papago/n2mt'
-
-    request = urllib.request.Request(url)
-
-    # -H (Header)
-    request.add_header('X-Naver-Client-Id', client_id)
-    request.add_header('X-Naver-Client-Secret', client_secret)
-    response = urllib.request.urlopen(request, data=data.encode('utf-8'))
-    rescode = response.getcode()
-
-    # 요청에 성공했을 경우, 변역된 텍스트를 가져오고
-    # DB로 보낼 쿼리문까지 작성 및 저장한다
-    if rescode == 200:
-        response = json.loads(response.read().decode('utf-8'))
-
-        # insert - 한국어로 작성한 문장과 영어로 번역된 문장을 tbl_papago에 추가
-        insert_query = "insert into tbl_papago(kor, eng) \
-                        values (%s, %s)"
-
-        insert_params = (kor_text, response['message']['result']['translatedText'])
-
-        save(insert_query, insert_params)
-
-    # 조회는 요청 성공 여부와 상관 없이 가능하도록, if문 밖에 작성
-    find_all_query = "select id, kor, eng from tbl_papago"
-    papago_result = find_all(find_all_query)
-
-    for papago in papago_result:
-        print(f"원본: {papago['kor']}\n번역본: {papago['eng']}")
+    #
+    # # 파파고 API 요청 코드
+    # client_id = 'uxrSmI_uYTAYICL5YP8J'
+    # client_secret = 'r0Olb4srIA'
+    #
+    # # 파파고 API에 보낼 번역할 문장(한국어 -> 영어)
+    # kor_text = "뿌린대로 거둔다"
+    #
+    # encoding_text = urllib.parse.quote(kor_text)
+    # data = f'source=ko&target=en&text={encoding_text}'
+    # url = 'https://openapi.naver.com/v1/papago/n2mt'
+    #
+    # request = urllib.request.Request(url)
+    #
+    # # -H (Header)
+    # request.add_header('X-Naver-Client-Id', client_id)
+    # request.add_header('X-Naver-Client-Secret', client_secret)
+    # response = urllib.request.urlopen(request, data=data.encode('utf-8'))
+    # rescode = response.getcode()
+    #
+    # # 요청에 성공했을 경우, 변역된 텍스트를 가져오고
+    # # DB로 보낼 쿼리문까지 작성 및 저장한다
+    # if rescode == 200:
+    #     response = json.loads(response.read().decode('utf-8'))
+    #
+    #     # insert - 한국어로 작성한 문장과 영어로 번역된 문장을 tbl_papago에 추가
+    #     insert_query = "insert into tbl_papago(kor, eng) \
+    #                     values (%s, %s)"
+    #
+    #     insert_params = (kor_text, response['message']['result']['translatedText'])
+    #
+    #     save(insert_query, insert_params)
+    #
+    # # 조회는 요청 성공 여부와 상관 없이 가능하도록, if문 밖에 작성
+    # find_all_query = "select id, kor, eng from tbl_papago"
+    # papago_result = find_all(find_all_query)
+    #
+    # for papago in papago_result:
+    #     print(f"원본: {papago['kor']}\n번역본: {papago['eng']}")
 
 
     # 4. OCR - DB 연동
-    # url = 'https://api.ocr.space/parse/imageurl?apikey=K86576074088957&url=https://thumb.mt.co.kr/06/2012/02/2012021613230156226_1.jpg/dims/optimize/&language=kor&isOverlayRequired=true'
-    # response = requests.get(url)
-    # response.raise_for_status()
-    #
-    # # 위 API가 분석한 글자 데이터를 json으로 받아옴
-    # result = response.json()
-    #
-    # # # DB로 보낼 insert문
-    # insert_query = "insert into tbl_ocr(url, text) \
-    #                 values (%s, %s)"
-    #
-    # # 이미지 파일 이름은 어떻게?
-    # insert_params = (url, result['ParsedResults'][0]['ParsedText'])
-    #
-    # # DB에 요청 url과 결과값(읽어온 글자) 저장
-    # save(insert_query, insert_params)
-    #
-    #
-    # # 전체 조회 쿼리문 작성하고, 받아온 데이터(dict)를 select_result 변수에 저장
-    # find_all_query = "select id, url, text from tbl_ocr"
-    # ocr_result = find_all(find_all_query)
-    #
-    # # 변수에 저장된 조회 데이터 출력
-    # for ocr in ocr_result:
-    #     print(f'경로: {ocr["url"]}\n내용: {ocr["text"]}')
+    url = 'https://api.ocr.space/parse/imageurl?apikey=K86576074088957&url=https://thumb.mt.co.kr/06/2012/02/2012021613230156226_1.jpg/dims/optimize/&language=kor&isOverlayRequired=true'
+    response = requests.get(url)
+    response.raise_for_status()
+
+    # 위 API가 분석한 글자 데이터를 json으로 받아옴
+    result = response.json()
+
+    # # DB로 보낼 insert문
+    insert_query = "insert into tbl_ocr(url, text) \
+                    values (%s, %s)"
+
+    # 이미지 파일 이름은 어떻게?
+    insert_params = (url, result['ParsedResults'][0]['ParsedText'])
+
+    # DB에 요청 url과 결과값(읽어온 글자) 저장
+    save(insert_query, insert_params)
+
+
+    # 전체 조회 쿼리문 작성하고, 받아온 데이터(dict)를 select_result 변수에 저장
+    find_all_query = "select id, url, text from tbl_ocr"
+    ocr_result = find_all(find_all_query)
+
+    # 변수에 저장된 조회 데이터 출력
+    for ocr in ocr_result:
+        print(f'경로: {ocr["url"]}\n내용: {ocr["text"]}')

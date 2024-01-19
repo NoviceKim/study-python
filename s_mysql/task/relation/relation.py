@@ -3,7 +3,9 @@ from field_trip import FieldTrip
 from post import Post
 import hashlib
 from pet_clinic import PetClinic
-from room import Room
+from office import Office
+from conference_room import ConferenceRoom
+from part_time import PartTime
 
 if __name__ == '__main__':
     # 학부모 정보 추가
@@ -308,97 +310,89 @@ if __name__ == '__main__':
     # save_many(save_many_query, save_many_params)
     #
     #
-    # 5. 예약 추가
-    # 이메일로 로그인 - 회의실 검색 - 예약시간 선택 순으로 진행
+    # # 5. 예약 추가
+    # find_all_query = "select id, name, location from tbl_office"
+    #
+    # offices = find_all(find_all_query)
+    #
+    # office_list = []
+    #
+    # for office in offices:
+    #     find_all_by_query = "select id from tbl_conference_room where office_id = %s"
+    #     find_all_by_params = office.get("id")
+    #
+    #     conference_rooms = find_all_by(find_all_by_query, find_all_by_params)
+    #
+    #     conference_room_list = []
+    #
+    #     for conference_room in conference_rooms:
+    #         find_all_by_query = "select id, time from tbl_part_time where conference_room_id = %s"
+    #         find_all_by_params = conference_room.get("id")
+    #
+    #         part_times = find_all_by(find_all_by_query, find_all_by_params)
+    #
+    #         part_time_list = []
+    #
+    #         for part_time in part_times:
+    #             part_time_list.append(PartTime(part_time.get("id"), part_time.get("time")))
+    #
+    #         part_times = tuple(part_time_list)
+    #         conference_room_list.append(ConferenceRoom(conference_room.get("id"), part_times))
+    #
+    #     conference_rooms = tuple(conference_room_list)
+    #     office_list.append(Office(office.get("id"), office.get("name"), office.get("location"), conference_rooms))
+    #
+    # offices = tuple(office_list)
+    #
+    # message = ""
+    #
+    # for office in offices:
+    #     message += f"{office.id}, {office.name}, {office.location}\n"
+    #
+    # office_choice = int(input(message))
+    # office = offices[office_choice - 1]
+    #
+    # message = f"회의실 번호를 입력해주세요\n{office.__str__()}"
+    # room_choice = int(input(message))
+    # conference_room = office.conference_rooms[room_choice - 1]
+    #
+    # find_all_by_query = "select time from tbl_reservation where conference_room_id = %s"
+    # find_all_by_params = conference_room.id,
+    #
+    # reservations = find_all_by(find_all_by_query, find_all_by_params)
+    #
+    # conference_room.reservations = reservations
+    #
+    # time_choice = int(input(conference_room.__str__()))
+    # part_time = conference_room.part_times[time_choice - 1]
+    #
+    # if part_time.status:
+    #     find_by_id_query = "select email from tbl_client where email = %s"
+    #     find_by_id_params = "kgh1234"
+    #     client = find_by_id(find_by_id_query, find_by_id_params)
+    #
+    #     save_query = "insert into tbl_reservation (time, client_email, conference_room_id) \
+    #                   values (%s, %s, %s)"
+    #
+    #     save_params = part_time.__str__(), client.get("email"), conference_room.id
+    #     save(save_query, save_params)
+    #
+    # else:
+    #     print("해당 회의실은 예약하실 수 없습니다.")
 
-    # 이메일 로그인
-    sign_in_email = input("이메일을 입력해주세요: ")
-
-    # 입력받은 이메일로 고객 테이블에 있는 데이터 조회
-    find_by_id_query = "select * from tbl_client where email = %s"
-    find_by_id_params = sign_in_email
-
-    target_client = find_by_id(find_by_id_query, find_by_id_params)
-
-    # 만약 어떤 데이터라도 찾았다면(= 입력한 이메일이 테이블에 있다면)
-    if target_client:
-        # 이번에는 비밀번호 검증 실행
-        sign_in_password = input("비밀번호를 입력해주세요: ")
-
-        # 입력한 비밀번호를 암호화해서, 다시 sign_in_password 변수에 할당
-        encryption = hashlib.sha256()
-        encryption.update(sign_in_password.encode('utf-8'))
-        sign_in_password = encryption.hexdigest()
-
-        # 비밀번호 인증까지 완료되면
-        if sign_in_password:
-            # 예약할 회의실 번호를 입력받음
-            target_conference_room = input("예약할 회의실의 번호를 입력해주세요: ")
-
-            # 이번에는 입력한 회의실 번호와 일치하는 데이터 전체가 필요하므로, find_all_by()를 사용
-            # 단, 이후 과정에 회의실 별 예약 가능 시간에 대한 정보rk 필요하므로
-            # 결국 예약 가능 시간 테이블과 조인해서, 해당 테이블에 있는 예약 가능 시간을 가져와야 된다
-            find_all_by_query = "select pt.time from tbl_conference_room cr join tbl_part_time pt \
-                                 on cr.id = pt.conference_room_id \
-                                 and pt.conference_room_id = %s"
-
-            find_by_id_params = target_conference_room,
-
-            # 입력한 회의실의 예약 가능 시간을 가져옴
-            available_time = find_all_by(find_by_id_query, find_by_id_params)
-
-            # 사용자가 원하는 예약 시간을 입력받음
-            target_time = input("원하는 예약 시간을 입력해주세요: ")
-
-            # 위에서 입력받은 예약할 회의실, 예약할 시간을 바탕으로 예약 테이블에서 검색
-            # 입력받은 데이터 두 가지를 모두(and) 가진 데이터가 있는지 조회하기 위함
-            find_by_id_query = "select id, time, created_date, client_email, conference_room_id \
-                                from tbl_reservation \
-                                where conference_room_id = %s and time = %s"
-
-            find_by_id_params = target_conference_room, target_time,
-
-            reservation_request = find_by_id(find_by_id_query, find_by_id_params)
-
-            # 만약 조회된 데이터가 없다면 = 같은 회의실을 같은 시간대에 예약한 건이 없다면
-            # 해당 건은 예약이 가능하다는 의미이니, 예약 테이블에 insert 쿼리문 전송
-            if not reservation_request:
-                save_query = "insert into tbl_reservation (time, client_email, conference_room_id) \
-                              values(%s, %s, %s)"
-
-                save_params = target_time, sign_in_email, target_conference_room
-
-                save(save_query, save_params)
-
-            # 만약 같은 회의실을 같은 시간대에 예약한 건이 있다면, 예약 불가 메세지 출력
-            else:
-                print("해당 회의실은 예약하실 수 없습니다. 다시 시도해주세요.")
-
-        # 만약 입력한 비밀번호가 고객 테이블에 있는 것과 다른 경우, 비밀번호 재확인 메세지 출력
-        else:
-            print("비밀번호가 일치하지 않습니다. 다시 확인해주세요.")
-
-    # 만약 입력한 이메일이 고객 테이블에 없을 경우, '회원 없음' 메세지 출력
-    else:
-        print("해당 회원을 찾을 수 없습니다. 다시 입력해주세요.")
 
     # 6. 회의실 전체 내용 조회 - 단, 예약 완료 된 회의실은 조회하지 않음
-    # 회의실 테이블 내용 전부 가져와서, target_rooms 변수에 할당(list 안 dict)
-    find_all_query = "select id, office_id from tbl_conference_room"
-    target_rooms = find_all(find_all_query)
+    find_all_query = "select o.id, o.name, o.location, c.id, p.time, ifnull(r.time, '예약가능') 'r.time' \
+                      from tbl_office o join tbl_conference_room c \
+                      on o.id = c.office_id \
+                      join tbl_part_time p \
+                      on p.conference_room_id = c.id \
+                      left outer join tbl_reservation r \
+                      on r.conference_room_id = c.id \
+                      and p.time = r.time \
+                      where r.time is Null"
 
-    # 회의실 dict를 담을 빈 list 준비
-    rooms_part = []
+    offices = find_all(find_all_query)
 
-    # list 순회
-    for room in target_rooms:
-
-        # 특정 id를 가진
-        find_all_by_query = "select id, time, conference_room_id from tbl_part_time where conference_room_id = %s"
-        find_all_by_params = target_rooms.get("id"),
-        part = find_all_by(find_all_by_query, find_all_by_params)
-        rooms_part.append(
-            Room(target_rooms.get("id"), target_rooms.get("office_id"), target_time))
-
-    for room in rooms_part:
-        print(target_rooms.__dict__)
+    for office in offices:
+        print(f"{office.get('name')}, {office.get('location')}, {office.get('c.id')}번 회의실, {str(office.get('time'))}, {str(office.get('r.time'))}")

@@ -30,28 +30,36 @@
 # print(list(map(lambda num, times: num * times, datas, multis)))
 
 
-# 각 경로 앞에 '/app'를 붙여준다.
-# '/app/game', '/app/news', '/app/fashion', '/app/ranking'
-urls = ['/game', '/news', '/fashion', '/ranking']
+# # 각 경로 앞에 '/app'를 붙여준다.
+# # '/app/game', '/app/news', '/app/fashion', '/app/ranking'
+# urls = ['/game', '/news', '/fashion', '/ranking']
+#
+# # 문자열 + 문자열을 하면 두 개가 붙어서 나온다 - '/app' + url
+# # formatting 써도 됨
+# new_urls = list(map(lambda url: f'/app{url}', urls))
+#
+# print(new_urls)
+#
+#
+# # filter(함수, 순서 있는 데이터 값들)
+# # 문제: 1~10까지 중 짝수만 출력
+# filtered_list = list(filter(lambda num: num % 2 == 0 and num != 0, [i for i in range(10)]))
+#
+# print(filtered_list)
+#
+#
+# # ['/app/game', '/app/news', '/app/fashion', '/app/ranking']
+# # 'game' 서비스를 제공하는 경로 찾기 - filter
+# urls = ['/app/game', '/app/news', '/app/fashion', '/app/ranking']
+#
+# target_route = list(filter(lambda url: url.split('/')[-1] == 'game', urls))
+#
+# print(target_route)
 
-# 문자열 + 문자열을 하면 두 개가 붙어서 나온다 - '/app' + url
-# formatting 써도 됨
-new_urls = list(map(lambda url: f'/app{url}', urls))
-
-print(new_urls)
+# 실습
+# "서울시" 를 "부산광역시" 로 변경
+cities = ['서울시', '부산광역시', '서울시', '부산광역시']
 
 
-# filter(함수, 순서 있는 데이터 값들)
-# 문제: 1~10까지 중 짝수만 출력
-filtered_list = list(filter(lambda num: num % 2 == 0 and num != 0, [i for i in range(10)]))
-
-print(filtered_list)
-
-
-# ['/app/game', '/app/news', '/app/fashion', '/app/ranking']
-# 'game' 서비스를 제공하는 경로 찾기 - filter
-urls = ['/app/game', '/app/news', '/app/fashion', '/app/ranking']
-
-target_route = list(filter(lambda url: url.split('/')[-1] == 'game', urls))
-
-print(target_route)
+cities = list(map(lambda city: '부산광역시', cities))
+print(cities)
